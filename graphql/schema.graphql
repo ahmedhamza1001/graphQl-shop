@@ -9,3 +9,13 @@ type Product {
 type Query {
     products: [Product!]! @all
 }
+
+# Mutations for managing products #
+type Mutation {
+    createProduct(
+        name: String!
+        description: String
+        price: Float!
+        stock: Int!
+    ): Product! @create
+}
