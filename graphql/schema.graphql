@@ -1,21 +1,96 @@
+########## Schema Definition ##########
+
+# Product Type #
 type Product {
     id: ID!
     name: String!
     description: String
     price: Float!
     stock: Int!
+
+    category: Category @belongsTo
 }
 
+# Category Type #
+type Category {
+    id: ID!
+    name: String!
+
+    products: [Product!]! @hasMany
+}
+
+# User Type #
+type User {
+    id: ID!
+    name: String!
+    email: String!
+
+    products: [Product!]! @hasMany
+    orders: [Order!]! @hasMany
+}
+
+# Order Type #
+type Order {
+    id: ID!
+    total: Float!
+    user: User! @belongsTo
+    orderItems: [OrderItem!]! @hasMany
+}
+
+# OrderItem Type #
+type OrderItem {
+    id: ID!
+    quantity: Int!
+    price: Float!
+    order: Order! @belongsTo
+    product: Product! @belongsTo
+}
+
+# Queries for fetching products and categories #
 type Query {
     products: [Product!]! @all
+    product(id: ID!): Product @find
+
+    categories: [Category!]! @all
+    category(id: ID!): Category @find
+
+    users: [User!]! @all
+    user(id: ID!): User @find
+
+    orders: [Order!]! @all
+    order(id: ID!): Order @find
+
+    items: [OrderItem!]! @all
 }
 
-# Mutations for managing products #
+########## Mutations ##########
 type Mutation {
+    # Mutation for creating a new product with an optional category association #
     createProduct(
         name: String!
         description: String
         price: Float!
         stock: Int!
+        category_id: ID!
     ): Product! @create
+
+    # Mutation for creating a new category #
+    createCategory(name: String!): Category! @create
+
+    # mutation for creating a new user #
+    createUser(name: String!, email: String!, password: String!): User! @create
+
+    # Mutation for creating a new order with associated order items #
+    createOrder(
+        user_id: ID!
+        total: Float!
+    ): Order! @create
+
+    createOrderItem(
+        order_id: ID!
+        product_id: ID!
+        quantity: Int!
+        price: Float!
+    ): OrderItem! @create
 }
+
